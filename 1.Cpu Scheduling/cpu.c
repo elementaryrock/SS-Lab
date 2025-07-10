@@ -20,9 +20,9 @@ void fcfs(struct Process proc[], int n)
     atat=0;
     for (int i=0;i<n;i++)
     {
-        for(int j=i+1;j<n;j++)
+        for(int j=0;j<n-i-1;j++)
             {
-                if(proc[j].at>proc[j].at || proc[j].at==proc[j].at && proc[j].pid>proc[j].pid)
+                if(proc[j].at>proc[j+1].at || proc[j].at==proc[j+1].at && proc[j].pid>proc[j+1].pid)
                 {
                     struct Process temp = proc[i];
                     proc[i] = proc[i+1];
