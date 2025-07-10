@@ -276,9 +276,6 @@ void roundrobin(struct Process proc[], int n)
         inQueue[0] = 1;
     }
     
-    printf("\nGantt Chart:\n");
-    printf("Time: %d", time);
-    
     while(completed < n)
     {
         if(front > rear)
@@ -303,8 +300,6 @@ void roundrobin(struct Process proc[], int n)
             time += execTime;
             rbt[current] -= execTime;
             
-            printf(" -> P%d -> %d", proc[current].pid, time);
-            
             for(int i = 0; i < n; i++)
             {
                 if(rbt[i] > 0 && inQueue[i] == 0 && proc[i].at <= time)
@@ -328,8 +323,6 @@ void roundrobin(struct Process proc[], int n)
             }
         }
     }
-    
-    printf("\n\n");
     
     for (int i = 0; i < n - 1; i++)
     {
