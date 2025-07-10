@@ -234,30 +234,128 @@ void priority(struct Process proc[], int n)
 
 void roundrobin(struct Process proc[], int n)
 {
-awt =0;
-atat=0;
-int quantum;
-printf("\nEnter time quantum: ");
-scanf("%d",&quantum);
-for(int i=0;i<n-1;i++)
-{
-    for(int j=0;j<n-i-1;j++)
+    awt = 0;
+    atat = 0;
+    int quantum;
+    printf("\nEnter time quantum: ");
+    scanf("%d", &quantum);
+    
+    for(int i = 0; i < n - 1; i++)
+    {
+        for(int j = 0; j < n - i - 1; j++)
         {
-            if(proc[j].at>proc[j+1].at || (proc[j].at==proc[j+1].at && proc[j].pid>proc[j+1].pid))
-                {
-                    struct Process temp = proc[j];
-                    proc[j] = proc[j+1];
-                    proc[j+1] = temp;
-                }
+            if(proc[j].at > proc[j+1].at || (proc[j].at == proc[j+1].at && proc[j].pid > proc[j+1].pid))
+            {
+                struct Process temp = proc[j];
+                proc[j] = proc[j+1];
+                proc[j+1] = temp;
+            }
         }
-}
-int rbt[n];
-for (int i=0;i<n;i++)
+    }
+    
+    int rbt[n];
+    for (int i = 0; i < n; i++)
     {
         rbt[i] = proc[i].bt;
     }
-
-
+    
+    int time = 0;
+    int completed = 0;
+    int queue[1000]; 
+    int front = 0, rear = -1;
+    int inQueue[n]; 
+    
+    for(int i = 0; i < n; i++)
+    {
+        inQueue[i] = 0;
+    }
+    
+    if(proc[0].at <= time)
+    {
+        queue[++rear] = 0;
+        inQueue[0] = 1;
+    }
+    
+    printf("\nGantt Chart:\n");
+    printf("Time: %d", time);
+    
+    while(completed < n)
+    {
+        if(front > rear)
+        {
+            for(int i = 0; i < n; i++)
+            {
+                if(rbt[i] > 0 && proc[i].at > time)
+                {
+                    time = proc[i].at;
+                    queue[++rear] = i;
+                    inQueue[i] = 1;
+                    break;
+                }
+            }
+        }
+        
+        if(front <= rear)
+        {
+            int current = queue[front++];
+            
+            int execTime = (rbt[current] < quantum) ? rbt[current] : quantum;
+            time += execTime;
+            rbt[current] -= execTime;
+            
+            printf(" -> P%d -> %d", proc[current].pid, time);
+            
+            for(int i = 0; i < n; i++)
+            {
+                if(rbt[i] > 0 && inQueue[i] == 0 && proc[i].at <= time)
+                {
+                    queue[++rear] = i;
+                    inQueue[i] = 1;
+                }
+            }
+            
+            if(rbt[current] == 0)
+            {
+                proc[current].ct = time;
+                proc[current].tat = proc[current].ct - proc[current].at;
+                proc[current].wt = proc[current].tat - proc[current].bt;
+                completed++;
+                inQueue[current] = 0;
+            }
+            else
+            {
+                queue[++rear] = current;
+            }
+        }
+    }
+    
+    printf("\n\n");
+    
+    for (int i = 0; i < n - 1; i++)
+    {
+        for(int j = 0; j < n - 1 - i; j++)
+        {
+            if(proc[j].pid > proc[j+1].pid)
+            {
+                struct Process temp = proc[j];
+                proc[j] = proc[j+1];
+                proc[j+1] = temp;
+            }
+        }
+    }
+    
+    printf("PID\tAT\tBT\tCT\tTAT\tWT\n");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d\t%d\t%d\t%d\t%d\t%d\n", proc[i].pid, proc[i].at, proc[i].bt, proc[i].ct, proc[i].tat, proc[i].wt);
+        awt += proc[i].wt;
+        atat += proc[i].tat;
+    }
+    
+    awt /= n;
+    atat /= n;
+    printf("\nAverage Waiting Time: %.2f\n", awt);
+    printf("Average Turnaround Time: %.2f\n", atat);
 }
 
 void main()
