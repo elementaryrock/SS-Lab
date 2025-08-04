@@ -14,50 +14,56 @@ A state where no safe sequence exists, which may lead to deadlock.
 
 ### Data Structures Used
 
-1. **Allocation Matrix**: Shows currently allocated resources to each process
-2. **Max Need Matrix**: Shows maximum resources each process may need
-3. **Need Matrix**: Shows remaining resources each process needs (Max - Allocation)
-4. **Available Vector**: Shows currently available resources in the system
+1. **Allocation Matrix (alloc)**: Shows currently allocated resources to each process
+2. **Max Need Matrix (max)**: Shows maximum resources each process may need
+3. **Need Matrix (need)**: Shows remaining resources each process needs (Max - Allocation)
+4. **Available Vector (avl)**: Shows currently available resources in the system
+5. **Total Resources (T)**: Total instances of each resource type
 
 ## Algorithm Steps
 
-### Step 1: Initialize Data Structures
-- Read the number of processes (n) and resource types (m)
-- Initialize Allocation, Max Need, and Available matrices
-- Calculate Need matrix: Need[i][j] = Max[i][j] - Allocation[i][j]
+### Step 1: Input and Initialize
+- Read number of processes (n) and resource types (m)
+- Read total instances of each resource type (T[])
+- Read Allocation matrix (alloc[][])
+- Read Max Need matrix (max[][])
 
-### Step 2: Safety Algorithm
+### Step 2: Calculate Available Resources
 ```
-1. Initialize Work = Available and Finish[i] = false for all i
-2. Find an index i such that:
-   - Finish[i] == false
-   - Need[i] <= Work
-3. If such i exists:
-   - Work = Work + Allocation[i]
-   - Finish[i] = true
-   - Go to step 2
-4. If Finish[i] == true for all i, then system is in safe state
-   Otherwise, system is in unsafe state
+For each resource type j:
+    c = sum of all allocated instances of resource j
+    avl[j] = T[j] - c
 ```
 
-### Step 3: Resource Request Algorithm
-When process Pi requests resources Request[i]:
-
+### Step 3: Calculate Need Matrix
 ```
-1. Check if Request[i] <= Need[i]
-   If not, raise error (exceeded maximum claim)
+For each process i and resource j:
+    need[i][j] = max[i][j] - alloc[i][j]
+```
 
-2. Check if Request[i] <= Available
-   If not, Pi must wait (resources not available)
+### Step 4: Safety Algorithm
+```
+1. Initialize:
+   - work[] = avl[] (copy available resources)
+   - finish[i] = 0 for all processes (none finished)
+   - safeseq[] = empty sequence
 
-3. Temporarily allocate resources:
-   - Available = Available - Request[i]
-   - Allocation[i] = Allocation[i] + Request[i]
-   - Need[i] = Need[i] - Request[i]
+2. Repeat n times:
+   For each process i:
+     If finish[i] == 0:
+       flag = 0
+       For each resource j:
+         If need[i][j] > work[j]:
+           flag = 1
+           break
+       If flag == 0:
+         safeseq[d++] = i
+         work[j] += alloc[i][j] for all j
+         finish[i] = 1
 
-4. Run Safety Algorithm:
-   - If safe: Grant the request
-   - If unsafe: Rollback allocation and deny request
+3. Count finished processes:
+   If all processes finished: System is SAFE
+   Otherwise: System is UNSAFE
 ```
 
 ## Example Walkthrough
