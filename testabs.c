@@ -27,7 +27,7 @@ int main()
     printf("\nEnter the file name: ");
     scanf("%s",user_programname);
 
-    if(strcmp(file_programname,user_programname)==0)
+    if(strcmp(file_programname,user_programname))
     {
         printf("Error");
         return 1;
