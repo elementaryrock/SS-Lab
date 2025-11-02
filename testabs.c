@@ -41,10 +41,10 @@ int main()
             start_address[6]='\0';
             recordpointer=12;
             writeop();
-            fgets(record,sizeof(record),iptr);
+            
         }
+        fgets(record,sizeof(record),iptr);
     }
-    fgets(record,sizeof(record),iptr);
     strncpy(eaddr,record+(2),6);
     printf("Address: %s",eaddr);
 }
