@@ -17,7 +17,7 @@ int main()
 
     recordpointer=2;
     fgets(record,sizeof(record),iptr);
-    if(record[recordpointer]!='^')
+    while(record[recordpointer]!='^')
     {
         file_programname[pointer]=record[recordpointer];
         recordpointer++;
@@ -27,7 +27,7 @@ int main()
     printf("\nEnter the file name: ");
     scanf("%s",user_programname);
 
-    if(strcmp(file_programname,user_programname))
+    if(strcmp(file_programname,user_programname)!=0)
     {
         printf("Error");
         return 1;
@@ -41,7 +41,7 @@ int main()
             start_address[6]='\0';
             recordpointer=12;
             writeop();
-            
+
         }
         fgets(record,sizeof(record),iptr);
     }
